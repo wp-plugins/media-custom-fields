@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: Webtastique Image Metadata
+Plugin Name: Media Custom Fields
 Plugin URI: http://webtastique.net/media-custom-fields/
 Author: Daniel Pataki
 Author URI: http://danielpataki.com/
