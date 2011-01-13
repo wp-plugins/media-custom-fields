@@ -324,8 +324,8 @@ function tqmcf_user_field_add() {
 		
 		$new_field = array (
 			$fields_count => array (
-				'name'        => $_POST['custom_field_name'],
-				'description' => $_POST['custom_field_description']
+				'name'        => stripslashes($_POST['custom_field_name']),
+				'description' => stripslashes($_POST['custom_field_description'])
 			)
 		);
 		
@@ -370,8 +370,8 @@ function tqmcf_user_field_edit() {
 		$old_field_name = 'tqmcf_' . sanitize_title_with_dashes( $tastique_media_custom_fields[$_POST['id']]['name'] );
 		$new_field_name = 'tqmcf_' . sanitize_title_with_dashes( $_POST['custom_field_name'] );
 	
-		$tqmcf[$_POST['id']]['name'] = $_POST['custom_field_name'];
-		$tqmcf[$_POST['id']]['description'] = $_POST['custom_field_description'];
+		$tqmcf[$_POST['id']]['name'] = stripslashes($_POST['custom_field_name']);
+		$tqmcf[$_POST['id']]['description'] = stripslashes($_POST['custom_field_description']);
 		
 		$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_key = %s WHERE meta_key = '$old_field_name'", $new_field_name ) );
 			
