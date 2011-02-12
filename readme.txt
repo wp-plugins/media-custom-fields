@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: media, custom fields
 Requires at least: 3.0
 Tested up to: 3.0.4
-Stable tag: 1.0
+Stable tag: 0.5
 
 Allows users to add and manage custom fields for the media post type
 
