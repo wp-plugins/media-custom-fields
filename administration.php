@@ -37,6 +37,7 @@ function tqmcf_register_settings() {
  *
  */
 function tqmcf_admin_page() {  
+   	global $wpdb;
     include('admin/administration_page.php');  
 }  
 

@@ -197,10 +197,9 @@ class tastique_media_custom_fields {
 		$tqmcf = get_tqmcf();
 		
 		foreach ( $tqmcf as $field ) {
-			$field_name = 'tqmcf_' . sanitize_title_with_dashes( $field['name'] );
-			$form_fields[$field_name]['label'] = $field['name'];
-			$form_fields[$field_name]['value'] = get_post_meta( $post->ID, $field_name, true );
-			$form_fields[$field_name]['helps'] = $field['description'];
+			$form_fields[$field["slug"]]['label'] = $field['name'];
+			$form_fields[$field["slug"]]['value'] = get_post_meta( $post->ID, $field["slug"], true );
+			$form_fields[$field["slug"]]['helps'] = $field['description'];
 		}
 		
 		return $form_fields;
@@ -225,8 +224,9 @@ class tastique_media_custom_fields {
 		$tqmcf = get_tqmcf();
 		
 		foreach ( $tqmcf as $field ) {
-			$field_name = 'tqmcf_' . sanitize_title_with_dashes( $field['name'] );
-			update_post_meta( $post['ID'], $field_name, $attachment[$field_name] );
+			if(trim($attachment[$field["slug"]]) != "") {
+				update_post_meta( $post['ID'], $field["slug"], $attachment[$field["slug"]] );
+			}
 		}
 		
 		return $post;
@@ -320,10 +320,13 @@ function tqmcf_user_field_add() {
 	    exit( tq_plugin_error( $title, $message ) );
 	}
 	else {
-		$fields_count = count( $tqmcf );
+	
+		$fields_count = ( $tqmcf ) ? count( $tqmcf ) : 0;
 		
 		$new_field = array (
 			$fields_count => array (
+				'ID'		  => $fields_count,
+				'slug'		  => "tqmcf_".sanitize_title_with_dashes($_POST['custom_field_name']),
 				'name'        => stripslashes($_POST['custom_field_name']),
 				'description' => stripslashes($_POST['custom_field_description'])
 			)
@@ -335,10 +338,8 @@ function tqmcf_user_field_add() {
 		else {
 			$new_fields = $new_field;
 		}
-			
-		$fields = serialize( $new_fields );
-		
-		update_option( 'tastique_media_custom_fields', $fields );
+					
+		update_option( 'tastique_media_custom_fields', $new_fields );
 	}
 }
 
@@ -363,21 +364,89 @@ function tqmcf_user_field_edit() {
 		$title   = 'Sorry, your nonce did not verify';
 		$message = 'It seems that you are either logged out, or trying to access this page in an unusual way. Log back into your website and try again.';
 	 
-	    exit( tqplugin_error( $title, $message ) );
+	    exit( tq_plugin_error( $title, $message ) );
 	}
 	else {
 	
-		$old_field_name = 'tqmcf_' . sanitize_title_with_dashes( $tastique_media_custom_fields[$_POST['id']]['name'] );
-		$new_field_name = 'tqmcf_' . sanitize_title_with_dashes( $_POST['custom_field_name'] );
-	
-		$tqmcf[$_POST['id']]['name'] = stripslashes($_POST['custom_field_name']);
-		$tqmcf[$_POST['id']]['description'] = stripslashes($_POST['custom_field_description']);
+		$tqmcf[$_POST["id"]] = array(
+			"ID" => $_POST["id"],
+			"name" => stripslashes($_POST["custom_field_name"]),
+			"slug" => $tqmcf[$_POST["id"]]["slug"],
+			"description" => stripslashes($_POST["custom_field_description"])
+		);
 		
-		$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_key = %s WHERE meta_key = '$old_field_name'", $new_field_name ) );
 			
-		$fields = serialize( $tqmcf );
+		update_option( 'tastique_media_custom_fields', $tqmcf );
+	}
+}
+
+
+
+
+/**
+ * Restores a user defined custom field
+ * 
+ * The function restores fields by modifying the tastique_media_custom_fields
+ * option in the database. It adds a new custom field based on the slug of an 
+ * old deleted one.
+ *
+ * @package Media Custom Fields
+ * @since 1.0
+ *
+ * @global	object	$wpdb	The database interaction object 
+ */
+function tqmcf_user_field_restore() {
+	global $wpdb;
+	$tqmcf = get_tqmcf();
+
+	if ( ! wp_verify_nonce( $_POST['_wpnonce'], 'tqmcf-restore_field' ) ) {
+		$title   = 'Sorry, your nonce did not verify';
+		$message = 'It seems that you are either logged out, or trying to access this page in an unusual way. Log back into your website and try again.';
+	 
+	    exit( tq_plugin_error( $title, $message ) );
+	}
+	else {
+	
+		$new_value = count($tqmcf);
+	
+		$tqmcf[$new_value] = array(
+			"ID" => $new_value,
+			"name" => str_replace("-", " ", $_POST["slug"]),
+			"slug" => $_POST["slug"],
+			"description" => ""
+		);
 		
-		update_option( 'tastique_media_custom_fields', $fields );
+			
+		update_option( 'tastique_media_custom_fields', $tqmcf );
+	}
+}
+
+
+
+/**
+ * Delete the data of a deleted field
+ * 
+ * The function deletes the data of a deleted custom field by removing all the custom postmeta 
+ * from the wordpress postmeta table
+ *
+ * @package Media Custom Fields
+ * @since 1.0
+ *
+ * @global	object	$wpdb	The database interaction object 
+ */
+function tqmcf_user_field_delete_data() {
+	global $wpdb;
+
+	if ( ! wp_verify_nonce( $_POST['_wpnonce'], 'tqmcf-delete_field_data' ) ) {
+		$title   = 'Sorry, your nonce did not verify';
+		$message = 'It seems that you are either logged out, or trying to access this page in an unusual way. Log back into your website and try again.';
+	 
+	    exit( tq_plugin_error( $title, $message ) );
+	}
+	else {
+	
+		$wpdb->query("DELETE FROM wp_postmeta WHERE meta_key = '$_POST[slug]' ");	
+			
 	}
 }
 
@@ -402,11 +471,14 @@ function tqmcf_user_field_delete() {
 		$title   = 'Sorry, your nonce did not verify';
 		$message = 'It seems that you are either logged out, or trying to access this page in an unusual way. Log back into your website and try again.';
 	   
-	   exit( tqplugin_error( $title, $message ) );
+	   exit( tq_plugin_error( $title, $message ) );
 	}
 	else {
+		
+		if( $_POST['custom_field_data_delete'] ) {
+			$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->postmeta WHERE meta_key = %s", $tqmcf[$_POST["id"]]["slug"] ) );
+		}
 
-		$old_field_name = 'tqmcf_' . sanitize_title_with_dashes( $tqmcf[$_POST['id']]['name'] );
 
 		unset( $tqmcf[$_POST['id']] );
 			
@@ -414,47 +486,9 @@ function tqmcf_user_field_delete() {
 		
 		update_option( 'tastique_media_custom_fields', $fields );
 		
-		if( $_POST['custom_field_data_delete'] ) {
-			$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->postmeta WHERE meta_key = %s", $old_field_name ) );
-		}
+
 	}
 }
-
-
-/**
- * Searching in a multi-dimensional array
- * 
- * The function is able to search for a value in a multi-dimensional
- * array, and return the path of where it can be located. 
- *
- * @package Media Custom Fields
- * @since 1.0
- *
- * @param	string	$needle		The string to look for in the array
- * @param	array	$haystack	The array we would like to search in
- * @param	bool 	$strict		If set to true, the data type must be the same
- * @param	array	$path		Optionally restrict the search to a part of the array	
- * @return	array				An array containing the path to the search result
- */
-function array_searchRecursive( $needle, $haystack, $strict = false, $path = array() )
-{
-    if( !is_array( $haystack ) ) {
-        return false;
-    }
-
-    foreach( $haystack as $key => $val ) {
-        if( is_array( $val ) && $subPath = array_searchRecursive( $needle, $val, $strict, $path ) ) {
-            $path = array_merge( $path, array( $key ), $subPath);
-            return $path;
-        } 
-        elseif( ( ! $strict && $val == $needle ) || ( $strict && $val === $needle ) ) {
-            $path[] = $key;
-            return $path;
-        }
-    }
-    return false;
-} 
-
 
 /** 
  * This file handles everything needed to create the administration pages

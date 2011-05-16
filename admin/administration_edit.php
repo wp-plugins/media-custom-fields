@@ -1,8 +1,6 @@
 <?php 
 	$tqmcf = get_tqmcf();
-	$edit_field_name = urldecode( $_GET['item'] );
-	$path = array_searchRecursive( $edit_field_name, $tqmcf );
-	$edit_field = $tqmcf[ $path[0] ];
+	$field = $tqmcf[$_GET["item_id"]];
 ?>
 <div class="wrap">  
    
@@ -19,7 +17,7 @@
 				<th scope="row"><?php _e( 'Field Name', TQ_PLUGIN_TEXTDOMAIN ) ?></th>
 				<td>
 					<input type="text" title="<?php _e( 'Add a short descriptive name for your field name', TQ_PLUGIN_TEXTDOMAIN ) ?>" 
-						name="custom_field_name" value="<?php echo $edit_field['name'] ?>" />
+						name="custom_field_name" value="<?php echo $field['name'] ?>" />
 				</td>
 			</tr>
 		
@@ -27,7 +25,7 @@
 				<th scope="row"><?php _e( 'Field Description', TQ_PLUGIN_TEXTDOMAIN ) ?></th>
 				<td>
 					<textarea title="<?php _e( 'An optional short description of the field', TQ_PLUGIN_TEXTDOMAIN ) ?>" 
-						name="custom_field_description"><?php echo $edit_field['description'] ?></textarea>
+						name="custom_field_description"><?php echo $field['description'] ?></textarea>
 				</td>
 			</tr>
 		
@@ -35,7 +33,7 @@
 		
 		<p class="submit">
 			<input type="hidden" name="action" value="edit" />
-			<input type="hidden" name="id" value="<?php echo $path[0] ?>" />
+			<input type="hidden" name="id" value="<?php echo $field['ID'] ?>" />
 			<input type="submit" class="button-primary" value="<?php _e( 'Edit custom field' ) ?>" />
 		</p>
 		

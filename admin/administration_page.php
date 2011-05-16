@@ -4,6 +4,10 @@ if( isset( $_GET['action'] ) AND $_GET['action'] == 'delete' ) :
 	include( 'administration_delete.php' );
 elseif( isset( $_GET['action'] ) AND $_GET['action'] == 'edit' ) :
 	include( 'administration_edit.php' );
+elseif( isset( $_GET['action'] ) AND $_GET['action'] == 'restore' ) :
+	include( 'administration_restore.php' );
+elseif( isset( $_GET['action'] ) AND $_GET['action'] == 'delete_data' ) :
+	include( 'administration_delete_data.php' );
 else :
 
 
@@ -57,18 +61,23 @@ $tqmcf = get_tqmcf();
 	</form>
 	
 	
-	<h3><?php _e( 'Existing Custom Fields', TQ_PLUGIN_TEXTDOMAIN ) ?><h3>	
+	<h3><?php _e( 'Existing Custom Fields', TQ_PLUGIN_TEXTDOMAIN ) ?></h3>	
 	
 	<div id="tqmcf-list">
-		<?php if ( $tqmcf ) : foreach ( $tqmcf as $field ) : $field_meta_name = 'tqmcf_' . sanitize_title_with_dashes( $field['name'] ); ?>
+		<?php 
+			if ( $tqmcf ) : foreach ( $tqmcf as $field ) :
+			$item_count = $wpdb->get_var("SELECT COUNT(post_id) FROM $wpdb->postmeta WHERE meta_key = '$field[slug]' AND meta_value != '' ");
+		?>
 			<div class="item">
-		    	<h4><?php echo $field['name'] ?> <small>(<?php echo $field_meta_name ?>)</small></h4>
-		    	<p><?php echo $field['description'] ?></p>
+		    	<h4><?php echo $field['name'] ?> <small>(<?php echo $field["slug"] ?>)</small></h4>
+		    	<p class="desc"><?php echo $field['description'] ?></p>
 		    	
 		   
-	
-		    	<a href="?page=<?php echo $_GET['page'] ?>&action=delete&item=<?php echo urlencode( $field['name'] ) ?>">delete</a>
-		    	<a href="?page=<?php echo $_GET['page'] ?>&action=edit&item=<?php echo urlencode( $field['name'] ) ?>">modify</a>	   
+				<a href="?page=<?php echo $_GET['page'] ?>&action=edit&item=_id<?php echo( $field['ID'] ) ?>">
+					view items (<?php echo $item_count ?>)
+				</a>
+		    	<a href="?page=<?php echo $_GET['page'] ?>&action=delete&item_id=<?php echo $field['ID'] ?>">delete</a>
+		    	<a href="?page=<?php echo $_GET['page'] ?>&action=edit&item_id=<?php echo $field['ID'] ?>">modify</a>	   
 		    </div>
 	    <?php 
 	    	endforeach; 
@@ -77,6 +86,44 @@ $tqmcf = get_tqmcf();
 	    	endif;
 	    ?>
 	</div>
+	
+	
+	
+	
+		
+	<div id="tqmcf-list-old">
+	<h3><?php _e( 'Deleted Custom Fields', TQ_PLUGIN_TEXTDOMAIN ) ?></h3>	
+
+
+		<?php 
+			$fields = array();
+			foreach($tqmcf as $field) {
+				$fields[] = $field["slug"];
+			}
+			$fields = "'".implode("', '", $fields)."'";
+			$items = $wpdb->get_col("SELECT DISTINCT(meta_key) FROM $wpdb->postmeta WHERE meta_key LIKE '%tqmcf_%' AND
+				meta_key NOT IN ($fields)	
+			");
+		?>
+			<?php if($items) : ?>
+			<p> The following fields have been deleted, but their data was not removed from Wordpress. </p>
+
+			<?php foreach($items as $item) : ?>
+			<div class="item">
+		    	<h5><?php echo $item ?></h5>
+		    	<a href="?page=<?php echo $_GET['page'] ?>&action=restore&item_slug=<?php echo $item ?>">restore</a>
+		    	<a href="?page=<?php echo $_GET['page'] ?>&action=delete_data&item_slug=<?php echo $item ?>">delete data</a>	   
+		    </div>
+	    <?php 
+	    	endforeach; 
+	    	else :
+	    		echo '<p>' . __( "You don't have any deleted custom fields", TQ_PLUGIN_TEXTDOMAIN ) . '</p>';
+	    	endif;
+	    ?>
+	</div>
+	
+	
+	
 	
 </div> 
 
