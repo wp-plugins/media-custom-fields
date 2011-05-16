@@ -5,7 +5,7 @@ Plugin URI: http://webtastique.net/media-custom-fields/
 Author: Daniel Pataki
 Author URI: http://danielpataki.com/
 Description: Enables the addition of custom fields to attachments in Wordpress
-Version: 1.0 dev
+Version: 1.0
 License: GPL3
 
 
