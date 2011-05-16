@@ -43,7 +43,7 @@ No, your data is not deleted when you uninstall the plugin. Data added to media 
 
 The plugin does two things. It enables you to create custom fields, and once created, enables you to add data to media items using those custom field. You can delete a custom field at any time, and choose weather you want to delete all the data you have entered using that custom field. 
 
-if you have created a custom field named "Photgrapher Name" and have added photographers to numerous photos, then subsequently delete the "Photographer Name" custom field, by default, your data will not be deleted with it. Each photo will still have the correct photographer assigned to it, however, you will not be able to modify this information until you recreate the "Photographer Name" custom field.
+if you have created a custom field named "Photographer Name" and have added photographers to numerous photos, then subsequently delete the "Photographer Name" custom field, by default, your data will not be deleted with it. Each photo will still have the correct photographer assigned to it, however, you will not be able to modify this information until you recreate the "Photographer Name" custom field.
 
 When deleting a custom field you can choose to delete all the data associated with that field. In this case, each photographer you added to an image will be removed and will no longer be accessible in any way, even if you recreate the same field. 
 
@@ -51,6 +51,7 @@ When deleting a custom field you can choose to delete all the data associated wi
 
 1. This page enables you to add your custom fields
 2. This screenshot shows the usual Wordpress edit media screen with the custom fields enabled
+3. You can view images linked to each custom field
 
 
 == Changelog ==
@@ -58,11 +59,18 @@ When deleting a custom field you can choose to delete all the data associated wi
 = 0.5 =
 * The first version of the plugin
 
+= 1.0 =
+* Fixed a bug where quotes couldn't be handled properly due to poor developer performance (sorry). This also caused problems in deleting some items which should now all be fixed
+* Added a view page where you can view all the media items related to a specific field
+* A counter is shown on the main page, showing the number of items which have this field filled out
+* Custom fields are now stored based on an ID, making them easier to handle on the code end 
+
 == Upgrade Notice ==
 
-There are no upgrades at this time
+I would strongly recommend the 1.0 update to everyone, as it fixes a stupid error on my part (sorry), and also adds a new page where you can view all the media items which have a certain custom field
 
 == Planned Features ==
 
 * Ability to add field data to attachment pages automatically
 * Much better UI
+* Easier access to media items for editing

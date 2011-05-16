@@ -8,7 +8,7 @@
  ?>
 <div class="wrap">  
    
-    <h2><?php _e( 'Related Media', TQ_PLUGIN_TEXTDOMAIN ) ?></h2>   
+    <h2><?php _e( 'Related Media', TQ_PLUGIN_TEXTDOMAIN ) ?> <small>(<?php echo $field["name"] ?>)</small></h2>   
 	<a href="?page=<?php echo $_GET['page'] ?>">back</a>
 
 
