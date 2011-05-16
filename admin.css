@@ -49,3 +49,28 @@
 #tqmcf-list-old .item {
 	margin:0 0 12px 30px;
 }
+
+#mcf_imagelist {
+	margin:20px 0 0 0;
+}
+
+#mcf_imagelist h2{
+	margin:0px;
+	padding:0px;
+}
+
+#mcf_imagelist td {
+	padding:3px 0;
+}
+
+#mcf_imagelist img {
+	margin: 0 12px 0 0;
+}
+
+.mcf_pagination {
+	margin:12px 0;
+}
+
+.mcf_pagination .current {
+	color:#D54E21
+}

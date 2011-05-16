@@ -8,6 +8,8 @@ elseif( isset( $_GET['action'] ) AND $_GET['action'] == 'restore' ) :
 	include( 'administration_restore.php' );
 elseif( isset( $_GET['action'] ) AND $_GET['action'] == 'delete_data' ) :
 	include( 'administration_delete_data.php' );
+elseif( isset( $_GET['action'] ) AND $_GET['action'] == 'view' ) :
+	include( 'administration_view.php' );
 else :
 
 
@@ -73,7 +75,7 @@ $tqmcf = get_tqmcf();
 		    	<p class="desc"><?php echo $field['description'] ?></p>
 		    	
 		   
-				<a href="?page=<?php echo $_GET['page'] ?>&action=edit&item=_id<?php echo( $field['ID'] ) ?>">
+				<a href="?page=<?php echo $_GET['page'] ?>&action=view&item_id=<?php echo( $field['ID'] ) ?>">
 					view items (<?php echo $item_count ?>)
 				</a>
 		    	<a href="?page=<?php echo $_GET['page'] ?>&action=delete&item_id=<?php echo $field['ID'] ?>">delete</a>

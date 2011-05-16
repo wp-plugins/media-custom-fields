@@ -5,7 +5,7 @@ Plugin URI: http://webtastique.net/media-custom-fields/
 Author: Daniel Pataki
 Author URI: http://danielpataki.com/
 Description: Enables the addition of custom fields to attachments in Wordpress
-Version: 0.5
+Version: 1.0 dev
 License: GPL3
 
 
@@ -143,6 +143,40 @@ define( 'TQ_PLUGIN_URL' , plugins_url() . '/' . TQ_PLUGIN_BASEDIR );
 define( 'TQ_PLUGIN_TEXTDOMAIN', 'tastique-media-custom-fields' );
 define( 'TQ_PLUGIN_SHORTNAME', 'tqmcf' );
 define( 'TQ_PLUGIN_LONGNAME', 'Media Custom Fields' );
+
+
+/* Activation Hook */
+
+register_activation_hook( __FILE__, 'tqmcf_activation' );
+
+function tqmcf_activation() {
+
+	$tqmcf = get_tqmcf();
+	if(!empty($tqmcf)) {
+		$i = 0;
+		foreach($tqmcf as $key => $field) {
+			if(!isset($field["ID"])) {
+				$new_tqmcf[$i]["ID"] = $i;
+				$new_tqmcf[$i]["name"] = $field["name"];
+				$new_tqmcf[$i]["slug"] = "tqmcf_".sanitize_title_with_dashes($field["name"]);
+				$new_tqmcf[$i]["description"] = $field["description"];
+			}
+			else {
+				$new_tqmcf[$i]["ID"] = $i;
+				$new_tqmcf[$i]["name"] = $field["name"];
+				$new_tqmcf[$i]["slug"] = $field["slug"];
+				$new_tqmcf[$i]["description"] = $field["description"];			
+			}
+			$i++;
+		}
+		
+		
+		
+		update_option( 'tastique_media_custom_fields', $new_tqmcf );
+
+	}
+
+}
 
 
 class tastique_media_custom_fields {
