@@ -55,7 +55,7 @@ When deleting a custom field you can choose to delete all the data associated wi
 
 == Changelog ==
 
-= 1.0 =
+= 0.5 =
 * The first version of the plugin
 
 == Upgrade Notice ==
@@ -65,3 +65,4 @@ There are no upgrades at this time
 == Planned Features ==
 
 * Ability to add field data to attachment pages automatically
+* Much better UI
